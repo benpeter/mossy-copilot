@@ -28,6 +28,12 @@ passage in this file that assumes Claude Code:
   this slice, and the slice she is on. The keep-string in the compaction section
   below is Claude Code syntax and does not apply; the re-anchoring it was meant
   to preserve becomes your message instead.
+- **A slash command needs TWO Enters.** Typing `/` opens a filter palette, and
+  the first Enter only picks the highlighted entry out of it; the second submits
+  the command. One Enter leaves the command sitting in the composer, which reads
+  like a send that silently failed. Send the text, Enter, settle, Enter again,
+  then confirm the pane went busy. Found live on 2026-07-27 while compacting the
+  worker between slices.
 - **She asks questions as plain prose.** Copilot has no permission prompts under
   `--allow-all`, so anything that looks like a question in her pane is a real
   question for you to answer, not a tool gate.
