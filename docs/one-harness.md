@@ -102,10 +102,29 @@ for merging.
 
 ## Addendum: running the DRIVERS on Copilot too
 
-Checked 2026-07-27 against Copilot CLI 1.0.75. Its model list includes
+**Corrected 2026-07-28. The paragraph below was wrong.** It was read off a model
+list rather than probed. Probing directly with `copilot -p OK --model <name>`,
+which fails instantly and free on an unavailable model:
+
+| model | available |
+|---|---|
+| `claude-opus-4.8` | yes |
+| `claude-sonnet-5` | yes |
+| `claude-sonnet-4.5` | yes |
+| `gpt-5.6-sol` | yes |
+| `claude-opus-5` | **no** |
+
+So "run Opus through Copilot" means 4.8, not 5, and the available set is gated by
+org policy rather than by the CLI. That is the more useful fact: a harness that
+hardcodes a model name breaks for somebody else's org, which is why the merged
+harness takes `MOSSY_MODEL_<ROLE>` as its own override.
+
+The current version of this document is `docs/drivers.md` in mossy-bottom.
+
+~~Checked 2026-07-27 against Copilot CLI 1.0.75. Its model list includes
 `claude-opus-5`, `Claude Opus 4.8/4.7/4.6/4.5`, `Claude Sonnet 5`, `Claude Haiku
 4.5` alongside the GPT and Gemini families. So "run Opus through Copilot" is
-available, and the whole chain could sit on one plan.
+available, and the whole chain could sit on one plan.~~
 
 What it would take, in order of effort:
 

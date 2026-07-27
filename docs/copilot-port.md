@@ -89,7 +89,12 @@ the first push, because removing it afterwards is a history rewrite.
 
 ## Cost
 
-Measured, not estimated, at `gpt-5.6-sol` + `xhigh`:
+**Caveat added 2026-07-28: the counter these figures come from is not
+cumulative.** It was observed going 2677, then 2504, then 2538 across consecutive
+reads of the same session, so it is not a running total. Treat the table as
+order of magnitude and never quote a figure to the digit.
+
+At `gpt-5.6-sol` + `xhigh`:
 
 | work | AI credits |
 |---|---|
