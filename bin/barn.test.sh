@@ -395,13 +395,16 @@ pfbin() {
       tmux) ln -s "$real_tmux" "$d/tmux" ;;
       git) ln -s "$real_git" "$d/git" ;;
       claude) printf '#!/bin/sh\nexit 0\n' >"$d/claude"; chmod +x "$d/claude" ;;
+      copilot) printf '#!/bin/sh\nexit 0\n' >"$d/copilot"; chmod +x "$d/copilot" ;;
     esac
   done
 }
-pf_all="$tmp/pf-all"; pfbin "$pf_all" tmux git claude
-pf_no_tmux="$tmp/pf-notmux"; pfbin "$pf_no_tmux" git claude
-pf_no_git="$tmp/pf-nogit"; pfbin "$pf_no_git" tmux claude
-pf_no_claude="$tmp/pf-nocla"; pfbin "$pf_no_claude" tmux git
+pf_all="$tmp/pf-all"; pfbin "$pf_all" tmux git claude copilot
+pf_no_tmux="$tmp/pf-notmux"; pfbin "$pf_no_tmux" git claude copilot
+pf_no_git="$tmp/pf-nogit"; pfbin "$pf_no_git" tmux claude copilot
+pf_no_claude="$tmp/pf-nocla"; pfbin "$pf_no_claude" tmux git copilot
+# This fork runs the worker on Copilot CLI, so copilot is a fourth launch prerequisite.
+pf_no_copilot="$tmp/pf-nocop"; pfbin "$pf_no_copilot" tmux git claude
 scratchL="$(new_scratch_repo repoL)" # a real git work tree (positive target)
 plainL="$tmp/plainL-not-git"; mkdir -p "$plainL" # a non-repo target (negative)
 
@@ -449,6 +452,19 @@ if grep -qF 'barn: missing claude -' <<<"$OUT"; then ok "L(e): names claude"; el
 # ...and MOSSY_CLAUDE set is honored: an override need not be on PATH (claude branch skipped).
 pf_run "$pf_no_claude" "$scratchL" # MOSSY_CLAUDE still = stub
 chk_eq "L(e): MOSSY_CLAUDE override skips the claude PATH check (rc 0)" "$CODE" "0"
+
+# (f) copilot absent -> refuses and names it. The worker cannot boot without it, and a
+# missing worker is a launch failure, not a degraded run.
+pf_run "$pf_no_copilot" "$scratchL"
+chk_eq "L(f): copilot absent -> refuses (rc 1)" "$CODE" "1"
+case "$OUT" in
+  *"missing copilot"*) ok "L(f): names copilot" ;;
+  *) no "L(f): names copilot (got '$OUT')" ;;
+esac
+
+# (g) MOSSY_WORKER_CMD supplies the worker command outright, so the PATH check is moot.
+OUT="$(MOSSY_WORKER_CMD='copilot --model other' PATH="$pf_no_copilot" preflight_tools "$scratchL" 2>&1)"; CODE=$?
+chk_eq "L(g): MOSSY_WORKER_CMD override skips the copilot PATH check (rc 0)" "$CODE" "0"
 
 # (f) END-TO-END 'no session/window created': a real subprocess `up` on a non-repo target,
 # all tools present, fails at preflight_tools BEFORE ensure_session - so the unique session is
