@@ -581,5 +581,45 @@ chk_eq "N(d): absent secrets file leaves launch_cmd byte-identical (no env prefi
   "$(MOSSY_SECRETS_FILE=/nonexistent-nope launch_cmd "$k_target")" \
   "MOSSY_STATE_DIR='$k_target' MOSSY_REPO_DIR='$expected_repo' GIT_PAGER=cat $CLAUDE_CMD"
 
+
+# ---------------------------------------------------------------------------
+# O. Copilot worker. This fork runs the WORKER on GitHub Copilot CLI while the two
+# drivers stay on Claude Code, so the launch command and the pane markers are no longer
+# one global constant. A Claude marker used on a Copilot pane does not fail loudly: the
+# boot waits out its whole timeout and then leaves a pane running without its role.
+# ---------------------------------------------------------------------------
+
+chk_eq "O(a): role_cmd bitzer is the claude command" "$(role_cmd bitzer)" "$CLAUDE_CMD"
+chk_eq "O(b): role_cmd shaun is the claude command" "$(role_cmd shaun)" "$CLAUDE_CMD"
+chk_eq "O(c): role_cmd shirley is the worker command" "$(role_cmd shirley)" "$WORKER_CMD"
+
+chk_eq "O(d): launch_cmd with no role stays on the claude command" \
+  "$(launch_cmd "$k_target")" \
+  "MOSSY_STATE_DIR='$k_target' MOSSY_REPO_DIR='$expected_repo' GIT_PAGER=cat $CLAUDE_CMD"
+
+chk_eq "O(e): launch_cmd shirley carries the worker command" \
+  "$(launch_cmd "$k_target" shirley)" \
+  "MOSSY_STATE_DIR='$k_target' MOSSY_REPO_DIR='$expected_repo' GIT_PAGER=cat $WORKER_CMD"
+
+chk_eq "O(f): ready_pattern for a claude role" "$(ready_pattern bitzer)" 'bypass permissions on'
+chk_eq "O(g): ready_pattern for the copilot worker" "$(ready_pattern shirley)" '/ commands'
+chk_eq "O(h): trust_pattern for a claude role" "$(trust_pattern shaun)" 'trust this folder'
+chk_eq "O(i): trust_pattern for the copilot worker" "$(trust_pattern shirley)" 'Confirm folder trust'
+chk_eq "O(j): a claude trust gate takes a bare Enter" "$(trust_keys bitzer)" 'Enter'
+chk_eq "O(k): copilot picks the remember-this-folder option" "$(trust_keys shirley)" 'Down Enter'
+
+o_default="$WORKER_CMD"
+case "$o_default" in
+  *"--allow-all"*) ok "O(l): the default worker command runs unattended (--allow-all)" ;;
+  *) no "O(l): the default worker command runs unattended (got '$o_default')" ;;
+esac
+case "$o_default" in
+  *"--no-ask-user"*) no "O(m): the worker keeps its question tool so shaun can answer" ;;
+  *) ok "O(m): the worker keeps its question tool so shaun can answer" ;;
+esac
+
+o_override="$(MOSSY_CLAUDE="$stub" MOSSY_WORKER_CMD='copilot --model other' bash -c '. "$1" >/dev/null 2>&1; role_cmd shirley' _ "$barn")"
+chk_eq "O(n): MOSSY_WORKER_CMD overrides the worker command" "$o_override" "copilot --model other"
+
 printf '\n%d passed, %d failed\n' "$pass" "$fail"
 [ "$fail" -eq 0 ]
