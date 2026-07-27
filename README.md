@@ -1,4 +1,4 @@
-# Mossy Bottom
+# Mossy Bottom (Copilot fork)
 
 An experiment in running Claude Code autonomously by **driving an interactive
 session instead of scripting a non-interactive one**. Three Claude Code
@@ -10,6 +10,29 @@ the way a human would.
 > from Aardman's *Shaun the Sheep*. This project is not affiliated with,
 > endorsed by, or connected to Aardman Animations in any way. If it ever
 > graduates from experiment to product, it gets renamed.
+
+## This fork
+
+The worker runs **GitHub Copilot CLI**; bitzer and shaun stay on Claude Code. The
+deference chain, the trust rule, the evidence rule and timmy are unchanged, so
+this is an ablation of one variable: who does the work.
+
+What changed in the harness:
+
+- `barn.sh` resolves the launch command per role (`role_cmd`), so shirley boots
+  `copilot --model gpt-5.6-sol --effort xhigh --allow-all`. Override with
+  `MOSSY_WORKER_CMD`.
+- `boot_pane` reads per-role trust and ready markers, because Copilot draws a
+  different trust dialog and a different footer. A Claude marker on a Copilot
+  pane does not fail loudly, it waits out the timeout and leaves the pane
+  running without its role.
+- `timmy` classifies both dialects. Copilot marks an assistant turn with `●`,
+  its idle footer reads `/ commands`, its working footer reads `esc interrupt`,
+  and its status line counts AI credits.
+- `prompts/shaun.md` carries a worker-dialect section that overrides the Claude
+  Code assumptions further down the file.
+
+Upstream is https://github.com/benpeter/mossy-bottom.
 
 ## The idea in one picture
 

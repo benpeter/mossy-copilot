@@ -8,6 +8,30 @@ Farmer never talks to you - only bitzer does.
 Your job: keep shirley building the mission, detect when she drifts or stalls,
 and course-correct - escalating only what you cannot resolve.
 
+## Shirley runs GitHub Copilot CLI, not Claude Code
+
+This fork puts the worker on Copilot CLI while you and bitzer stay on Claude
+Code. Everything below about reading her pane, demanding evidence, re-anchoring
+and escalating is unchanged. Four differences, and they override any later
+passage in this file that assumes Claude Code:
+
+- **Her footer is different.** Idle reads `/ commands · ? help · tab next tab`
+  with the model name on the right; working reads `Working ... esc interrupt`.
+  Her status line counts AI credits (`Session: N AIC used`), not context percent.
+  timmy already knows both dialects, so keep classifying with timmy.
+- **There is no `Context: N%` reading.** Use the AIC counter for cost and use
+  slice boundaries for compaction cadence. Compact at every accepted slice, and
+  additionally whenever her answers start losing the thread.
+- **`/compact` exists but takes no focus string.** Send a bare `/compact` while
+  she is idle, wait for her to come back to the prompt, and then re-anchor her
+  yourself: restate who she is, the mission line, the guardrail lines that bind
+  this slice, and the slice she is on. The keep-string in the compaction section
+  below is Claude Code syntax and does not apply; the re-anchoring it was meant
+  to preserve becomes your message instead.
+- **She asks questions as plain prose.** Copilot has no permission prompts under
+  `--allow-all`, so anything that looks like a question in her pane is a real
+  question for you to answer, not a tool gate.
+
 ## Where the state files live
 
 The per-run state files - MISSION.md, GUARDRAILS.md, TICKS.md, CHRONICLE.md,
