@@ -1,13 +1,12 @@
-# Should the fork exist at all?
+# One harness, any driver at any level
 
-Written 2026-07-27, at the end of the first live Copilot run, while the evidence
-is fresh. The question: **should mossy-bottom and mossy-copilot be one harness
-with a per-role choice of driver, rather than two repos?**
+Written 2026-07-27 as an evaluation. **Decided by the Farmer 2026-07-28 00:10:
+do it.** Fold `mossy-copilot` back into `mossy-bottom`, make the driver a per-role
+choice, and support running every role on Copilot. The live royalairmaroc
+migration is the guinea pig: it cuts over to the merged harness and proves it.
 
-## The answer
-
-Yes, and the fork should die once the merge lands. The fork was the right way to
-find out what differs; it is the wrong way to keep it.
+The fork was the right way to find out what differs. It is the wrong way to keep
+it.
 
 The reason is not tidiness. It is that the fork has already started costing
 correctness. Two of tonight's six escalations were harness defects that existed
