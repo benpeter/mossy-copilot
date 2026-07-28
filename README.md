@@ -1,5 +1,30 @@
 # Mossy Bottom (Copilot fork)
 
+> # Archived 2026-07-28. Superseded by mossy-bottom.
+>
+> This fork existed from 2026-07-27 to 2026-07-28 to find out what actually
+> differs between Copilot CLI and Claude Code in the worker seat. It answered
+> that, and the answer is in `docs/copilot-port.md`. The code moved to
+> **[benpeter/mossy-bottom](https://github.com/benpeter/mossy-bottom)**, where a
+> driver is a per-role choice rather than a fork:
+>
+> ```
+> MOSSY_DRIVER_SHIRLEY=copilot bin/barn.sh up <target>
+> ```
+>
+> Read `docs/drivers.md` there. It supersedes `docs/copilot-port.md` and
+> `docs/one-harness.md` here, and it carries the corrections those two got wrong.
+>
+> **Why it was folded back.** Forking was the right way to find out and the wrong
+> way to keep it. Within one night, two of six escalations were harness defects
+> that existed only because the fork forked: a window-sizing bug with nothing to
+> do with Copilot, fixed in one repo and not the other, and a timmy regression
+> that landed here while upstream stayed correct. The delta was four files, which
+> is the finding: the architecture was driver-agnostic already.
+>
+> The live royalairmaroc.com migration this fork drove was cut over to the merged
+> harness on 2026-07-28 at 07:15, with all three roles on Copilot CLI.
+
 An experiment in running Claude Code autonomously by **driving an interactive
 session instead of scripting a non-interactive one**. Three Claude Code
 sessions share one tmux window in a strict deference chain. The outer ones
